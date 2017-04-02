@@ -74,10 +74,8 @@ if($_SERVER['REQUEST_METHOD']=="POST"){
 	
 	//open file
 	
-	$file = fopen("./record.txt","a+");
-	
-	if($file){
-	
+	$con = mysqli_connect("localhost", "root", "", "user_db");
+	if($con){
 		// writeID
 		$parts = explode("-", $id);
 		$digits = str_split($id);
@@ -163,7 +161,7 @@ if($_SERVER['REQUEST_METHOD']=="POST"){
 		//showEmail starts here
 		$partemail = explode("@", $email);
 		$partdomain = explode(".", $partemail[1]);
-	
+
 		if ($email == ""){
 			echo "Email Address cannot be empty";
 		}
@@ -179,7 +177,7 @@ if($_SERVER['REQUEST_METHOD']=="POST"){
 		else {
 			$emailcorrect = true;
 		}
-	
+
 		//showEmail ends here
 		
 		echo "<br/>";
@@ -196,15 +194,18 @@ if($_SERVER['REQUEST_METHOD']=="POST"){
 		
 		if($idcorrect == true && $passcorrect == true && $namecorrect == true && $emailcorrect == true && $usertypecorrect == true){
 			
-			$query = "INSERT INTO user(id,password,name,type) values ('$id','$password','$name','$usertype')";
-			$con = mysqli_connect("localhost","root","","somedatabase");
+			$query = "INSERT INTO user(id,name,password,email,type) values ('". $id ."','". $name ."','". $password ."','". $email ."','". $usertype ."')";
 			$result = mysqli_query($con, $query);
+			if($result){
+				echo "Registration Successful. Please log in.";
+			}
+			else
+				echo "Registration wasn't complete. Please try again.";
 		
 		}
 	}
-	
-	else{
-		echo "Error while opening file.";
+	else {
+		echo "Error opening database.";
 	}
 
 }	

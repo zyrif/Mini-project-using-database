@@ -39,23 +39,31 @@ if($_SERVER['REQUEST_METHOD']=="POST"){
 	$id = trim($_REQUEST['idfield']);
 	$pass = trim($_REQUEST['passfield']);
 	
-	$query = "SELECT password, type FROM user WHERE id='$id'";
 	$con = mysqli_connect("localhost", "root", "", "user_db");
-	$result = mysqli_query($con, $query);
-	
-	$row = mysqli_fetch_array($result);
-	if($pass == $row['password']){
-		if($row['type'] == "admin"){
-			$_SESSION['id'] = $id;
-			header("location: adminhomepage.php");
+	if($con) {
+		$query = "SELECT password, type FROM user WHERE id='".$id."'";
+		$result = mysqli_query($con, $query);
+		
+		if($result){
+			$row = mysqli_fetch_array($result);
+			if($pass == $row['password']){
+					$_SESSION['id'] = $id;
+					header("location: adminhomepage.php");
+				}
+					$_SESSION['id'] = $id;
+					header("location: userhomepage.php");
+				}
+			}
+			else {
+				echo "Error while querying to database.";
+			}
 		}
-		else if($row['type'] == "user"){
-			$_SESSION['id'] = $id;
-			header("location: userhomepage.php");
+		
+		else{
+			echo "Invalid username/password";
 		}
 	}
-	
-	else{
-		echo "Invalid username/password";
-	}		
+	else {
+		echo "Error connecting to database.";
+	}
 }
