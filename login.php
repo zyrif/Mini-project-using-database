@@ -47,9 +47,11 @@ if($_SERVER['REQUEST_METHOD']=="POST"){
 		if($result){
 			$row = mysqli_fetch_array($result);
 			if($pass == $row['password']){
+				if($row['type'] == "Admin"){
 					$_SESSION['id'] = $id;
 					header("location: adminhomepage.php");
 				}
+				else if($row['type'] == "User"){
 					$_SESSION['id'] = $id;
 					header("location: userhomepage.php");
 				}
