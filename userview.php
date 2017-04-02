@@ -1,13 +1,39 @@
 <?php
 
-session_start();
 
-if($_SESSION['id'] != "")
-	$id = $_SESSION['id'];
-else
-	header("location: logout.php");
+	session_start();
 
-$file = fopen("record.txt", "r");
+	if($_SESSION['id'] != ""){
+		$id = $_SESSION['id'];
+	}
+	else {
+		header("location: login.php");
+	}
+	
+	$con = mysqli_connect("localhost", "root", "", "user_db");
+	if($con) {
+		$query = "SELECT type FROM user WHERE id='".$id."'";
+		$result = mysqli_query($con, $query);
+		
+		if($result){
+			$row = mysqli_fetch_array($result);
+			
+			if($row['type'] == "Admin"){
+				
+			}
+			
+			else if($row['type'] == "User"){
+				header("location: userhomepage.php");
+			}
+		}
+		
+		else{
+			header("location: login.php");
+		}
+	}
+	else {
+		header("location: login.php");
+	}
 
 ?>
 
@@ -26,17 +52,15 @@ $file = fopen("record.txt", "r");
 		
 <?php	
 
-		while(!feof($file)){
-			$line = fgets($file);
-			$records = explode("\n", $line);
+	if($con) {
+		$query = "SELECT id, name, email, type FROM user";
+		$result = mysqli_query($con, $query);
+		while($row = mysqli_fetch_assoc($result)){
+
+			echo "<tr> <td> <p> $row[id] </p> </td> <td> <p> $row[name] </p> </td> <td> <p> $row[email] </p> </td> <td> <p> $row[type] </p> </td> </tr>";
 		
-			foreach($records as $item){
-				$data = explode(":", $item);
-				if($data[0] != ""){
-					echo "<tr> <td> <p> $data[0] </p> </td> <td> <p> $data[2] </p> </td> <td> <p> $data[3] </p> </td> <td> <p> $data[4] </p> </td> </tr>";
-				}
-			}	
-		}
+		}	
+	}
 ?>
 		<tr> <td  colspan="4"> <a href="./adminhomepage.php"> Go Home </a> </td> </tr>
 	

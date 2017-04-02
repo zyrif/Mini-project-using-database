@@ -1,13 +1,41 @@
 <?php 
 
-session_start();
+	session_start();
 
-$user = simplexml_load_file("record.xml");
+	if($_SESSION['id'] != ""){
+		$id = $_SESSION['id'];
+	}
+	else {
+		header("location: login.php");
+	}
+	
+	$con = mysqli_connect("localhost", "root", "", "user_db");
+	if($con) {
+		$query = "SELECT name,type FROM user WHERE id='".$id."'";
+		$result = mysqli_query($con, $query);
+		
+		if($result){
+			$row = mysqli_fetch_array($result);
+			if($row['type'] == "Admin"){
+				$name = $row['name'];
+			}
+			
+			else if($row['type'] == "User"){
+				header("location: userhomepage.php");
+			}
 
-
-$name = $user->name;
-
-
+			else {
+				header("location: login.php");
+			}
+		}
+		
+		else{
+			header("location: login.php");
+		}
+	}
+	else {
+		header("location: login.php");
+	}
 ?>
 
 

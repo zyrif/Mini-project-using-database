@@ -1,31 +1,42 @@
 <?php
 
-session_start();
+	session_start();
 
-if($_SESSION['id'] != "")
-	$id = $_SESSION['id'];
-else
-	header("location: logout.php");
-
-$file = fopen("record.txt", "r");
-
-while(!feof($file)){
-		$line = fgets($file);
-		$records = explode("\n", $line);		
+	if($_SESSION['id'] != ""){
+		$id = $_SESSION['id'];
+	}
+	else {
+		header("location: login.php");
+	}
+	
+	$con = mysqli_connect("localhost", "root", "", "user_db");
+	if($con) {
+		$query = "SELECT name, email, type FROM user WHERE id='".$id."'";
+		$result = mysqli_query($con, $query);
 		
-		
-		foreach($records as $item){
-			$data = explode(":", $item);
-			if($data[0] == $id){
-				$name = $data[2];
-				$email = $data[3];
-				$usertype = $data[4];
+		if($result){
+			$row = mysqli_fetch_array($result);
+			
+			$name = $row['name'];
+			$email = $row['email'];
+			$usertype = $row['type'];
+			
+			if($row['type'] == "Admin"){
+				$gohome = "./adminhomepage.php";
+			}
+			
+			else if($row['type'] == "User"){
+				$gohome = "./userhomepage.php";
 			}
 		}
 		
+		else{
+			header("location: login.php");
+		}
 	}
-
-
+	else {
+		header("location: login.php");
+	}
 
 ?>
 
@@ -41,7 +52,7 @@ while(!feof($file)){
 		<tr> <td> <p> Name </p> </td> <td> <p> <?php echo $name;?> </p> </td> </tr>
 		<tr> <td> <p> Email </p> </td> <td> <p> <?php echo $email;?> </p> </td> </tr>
 		<tr> <td> <p> User Type </p> </td> <td> <p> <?php echo $usertype;?> </p> </td> </tr>
-		<tr> <td  colspan="2"> <a href="./adminhomepage.php"> Go Home </a> </td> </tr>
+		<tr> <td  colspan="2"> <a href="<?php echo $gohome;?>"> Go Home </a> </td> </tr>
 	
 	</table>
 </body>	
